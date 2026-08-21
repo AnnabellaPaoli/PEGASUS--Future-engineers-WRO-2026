@@ -2,22 +2,24 @@
 
 Este repositorio contiene el desarrollo del robot autónomo **TROYA** de nuestro equipo **PEGASUS**, diseñado para competir en la categoría de Futuros Ingenieros en la subcategoría **SENIOR** de la WRO 2026.
 
+---
+
 ## 👥 Nuestro Equipo: PEGASUS
 
 Aquí presentamos a los integrantes del equipo **PEGASUS**, responsables del diseño, construcción y programación del robot autónomo **TROYA** para la subcategoría **SENIOR** de la WRO 2026:
 
 ![Foto de Equipo](t-photos/foto_equipo.jpg)
+*(Sube tu foto de equipo a la carpeta `/t-photos` con el nombre `foto_equipo.jpg` para que se muestre aquí)*
 
 ### Integrantes y Roles:
 
-*   **[Annabella Paoli]**  
-    *   **Rol:** Líder de Desarrollo de Software y Visión Artificial| Líder de Diseño Mecánico, Chasis
-    *   **Contribución:** Responsable del pipeline de visión computacional HSV en la ESP32-Cam, calibración de color de los pilares, programación del control PD en el Arduino Uno y sincronización del puerto serie asíncrono.Responsable del diseño estructural en 3D del chasis Ackermann de TROYA y reparación de la mangueta de PVC de alta flexibilidad.
+*   **Annabella Paoli**  
+    *   **Rol:** Líder de Desarrollo de Software, Visión Artificial y Diseño Mecánico CAD.  
+    *   **Contribución:** Responsable del pipeline de visión computacional HSV en la ESP32-Cam, filtrado y calibración de color de los pilares, programación de la máquina de estados y control PD en el Arduino Uno, sincronización de la comunicación asíncrona, modelado 3D del chasis Ackermann de TROYA y reparación elástica de la mangueta con PVC reciclado de alta flexibilidad.
     
-
-*   **[Bruno Paoli]**  
+*   **Bruno Paoli**  
     *   **Rol:** Líder de Integración Eléctrica, Potencia y Seguridad.  
-    *   **Contribución:** Responsable del esquema eléctrico de conexiones, calibración y testeo del regulador de voltaje LM2596, distribución de masa común (GND) y análisis de seguridad del sistema de alimentación de las celdas 18650.
+    *   **Contribución:** Responsable del esquema de conexiones eléctricas, calibración y testeo del regulador de voltaje LM2596, distribución de masa común (GND) y análisis de seguridad del sistema de alimentación de las celdas 18650.
 
 ---
 
@@ -25,7 +27,7 @@ Aquí presentamos a los integrantes del equipo **PEGASUS**, responsables del dis
 
 El repositorio está organizado bajo la siguiente estructura limpia para facilitar la navegación de los jueces y el equipo:
 
-*   `/src`: Códigos fuente para la ESP32-Cam (visión artificial) y Arduino Uno (control y actuadores).
+*   [**/src**](src): Códigos fuente de competencia para la [ESP32-Cam](src/esp32_vision.ino) (visión artificial) y el [Arduino Uno](src/arduino_control.ino) (control y actuadores).
 *   `/schemes`: Diagramas de conexión y diseño de la distribución eléctrica.
 *   `/models`: Archivos de diseño en 3D del chasis y piezas personalizadas.
 *   `/t-photos`: Registro fotográfico del equipo PEGASUS.
@@ -70,7 +72,7 @@ Al conectar el pin de habilitación del Puente H (`ENA`) al pin 10 del Arduino p
 
 #### ❌ El Bug del "Coche Zombie" (Desbordamiento de SoftwareSerial)
 Durante las pruebas de ultrasonido, añadimos retrasos de `delay(15)` entre la lectura de cada sensor para evitar interferencia de ondas. Sin embargo, al hacer esto, el carro comenzó a avanzar recto de largo, ignorando por completo las paredes y chocando sin detenerse de forma aleatoria.
-*   **La Causa Técnica:** Al sumar los delays de los sensores, el ciclo principal (`loop`) tardaba más de 55 ms en ejecutarse. A una velocidad de 38400 baudios, la ESP32-Cam envía datos tan rápido que el búfer de recepción de `SoftwareSerial` del Arduino (que solo tiene 64 bytes de capacidad) **se desbordaba constantemente**. Esto corrompía los paquetes de datos serie, haciendo que la función `sscanf` interpretara valores basura y corrompiera la memoria RAM (Stack Corruption) del Arduino Uno. El coche entraba en un estado "zombie" ignorando las condicionales lógicas de los sensores.
+*   **La Causa Técnica:** Al sumar los delays de los sensores, el ciclo principal (`loop`) tardaba más de 55 ms en ejecutarse. A una velocidad de 38400 baudios, la ESP32-Cam envía datos tan rápido que el búfer de recepción de `SoftwareSerial` del Arduino (que solo tiene 64 bytes de capacidad) **se desbordaba constantemente**. Esto corrompía los paquetes de datos serie, haciendo que la función `sscanf` interpretara valores basura y corrompiera la memoria RAM (Stack Corruption) del Arduino Uno. El coche de pruebas entraba en un estado "zombie" ignorando las condicionales lógicas de los sensores.
 *   **La Solución:** Eliminamos todos los delays intermedios de los ultrasonidos y agregamos un filtro estricto de seguridad `sscanf == 4`. El Arduino ahora solo procesa los datos de la cámara si la trama de datos serie recibida contiene exactamente los 4 enteros del protocolo, de lo contrario la descarta, garantizando que el búfer nunca se sature y que el procesador ejecute el lazo de control con total fluidez.
 
 ### 🔊 5. Desafíos de Física de Sensores
@@ -82,7 +84,7 @@ Durante las pruebas de frenado frontal en casa, descubrimos que el robot esquiva
 #### ❌ Atasque por Fricción en Zonas Estrechas (Stall a 85 PWM)
 Al entrar en pasillos angostos, el robot comenzaba a corregir su dirección constantemente y, de pronto, se quedaba completamente quieto y en silencio a mitad de carril, a pesar de tener espacio libre al frente.
 *   **La Causa Física:** En las zonas estrechas, el lazo PD genera giros de dirección muy pronunciados. En un chasis con dirección Ackermann, doblar las ruedas delanteras con fuerza incrementa dramáticamente la **resistencia a la rodadura (fricción)** del carro. En nuestro algoritmo de curvas, permitíamos que la velocidad mínima bajara hasta `85` PWM. Esa potencia era demasiado baja para vencer el peso del chasis y la resistencia mecánica de las ruedas dobladas al mismo tiempo, provocando que el motor de tracción trasera sufriera un bloqueo por torque (*stall*).
-*   **La Solución:** Ajustamos el software para establecer un límite de velocidad mínima en curvas de **`105` PWM**. Este voltaje extra le proporciona al motor el torque necesario para empujar el chasis con las ruedas delantera dobladas al extremo sin atascarse.
+*   **La Solución:** Ajustamos el software para establecer un límite de velocidad mínima en curvas de **`105` PWM**. Este voltaje extra le proporciona al motor el torque necesario para empujar el chasis con las ruedas delantera dobladas al extremo sin antes atascarse.
 
 ---
 
@@ -96,6 +98,7 @@ Al entrar en pasillos angostos, el robot comenzaba a corregir su dirección cons
 ### Diagrama de Bloques del Hardware
 
 El siguiente diagrama detalla la distribución de energía (partiendo de una configuración de 3 baterías 18650 que entregan un voltaje nominal de ~11.1V) y el flujo de señales de control:
+
 ```mermaid
 graph TD
     Bateria["Bateria 18650 x 3 (11.1V)"] --> |Alimentacion directa| PuenteH["Puente H L298N / TB6612FNG"]
@@ -110,53 +113,81 @@ graph TD
     US_Izq["Ultrasonico Izquierdo"] --> |"Trigger / Echo"| Arduino
     US_Cent["Ultrasonico Frontal"] --> |"Trigger / Echo"| Arduino
     US_Der["Ultrasonico Derecho"] --> |"Trigger / Echo"| Arduino
-    
-    Arduino --> |Senal PWM| Servo["Servo Motor Direccion"]
-    Arduino --> |"Senal PWM y Direccion"| PuenteH
-    PuenteH --> |Energia| MotorDC["Motor DC Traccion"]
+```
+### 💻 Lógica de Control y Navegación Autónoma
 
-### Lógica de Control y Navegación Autónomo
+El sistema de control de TROYA utiliza un enfoque de fusión de sensores y un controlador Proporcional-Derivativo (PD) para resolver de forma estable los desafíos de navegación, evasión de obstáculos y estacionamiento en un chasis con dirección tipo Ackermann.
 
-El sistema de control de **TROYA** utiliza un enfoque de **fusión de sensores** y **control proporcional (P)** para resolver de forma estable los desafíos de navegación, evasión de obstáculos y estacionamiento en un chasis con dirección tipo Ackermann.
+1. Fusión de Sensores y Prioridades de Control
+Para evitar colisiones causadas por posibles caídas en la tasa de refresco (FPS) de la cámara, el Arduino Uno evalúa constantemente el entorno con sensores de distancia de forma prioritaria:
 
----
-
-### 1. Fusión de Sensores y Prioridades de Control
-
-Para optimizar el uso de los recursos de hardware limitados (Arduino Uno y ESP32-Cam), se implementó una arquitectura de control distribuida con asignación de prioridades:
-
-*   **Procesamiento de Visión (ESP32-Cam):** Se encarga de la clasificación de color de obstáculos (rojo/verde) y de proponer trayectorias de giro basadas en el color detectado
-*   **Control de Seguridad y Distancia (Arduino Uno):** Lee en tiempo real los 3 sensores ultrasónicos para el centrado milimétrico respecto a las paredes laterales y actúa como un sistema de freno autónomo de emergencia si la cámara experimenta retraso (lag).
-
-El flujo de prioridades se ejecuta bajo el siguiente criterio:
-
+```mermaid
 graph TD
-    A[Lectura de Sensores Ultrasónicos] --> B{¿Obstáculo frontal < 20cm?}
-    B -- Sí --> C[Prioridad 1: Detener Motor / Seguridad]
-    B -- No --> D{¿Pared lateral muy cercana < 10cm?}
-    D -- Sí --> E[Prioridad 2: Corrección Física por Ultrasónicos]
-    D -- No --> F[Prioridad 3: Seguir Trayectoria propuesta por Cámara]
+    A["Lectura de Sensores Ultrasónicos"] --> B{"¿Obstáculo frontal < 25cm?"}
+    B -- Sí --> C["Prioridad 1: Ejecutar Retroceso Reactivo (Escape)"]
+    B -- No --> D{"¿Pared lateral muy cercana < 10cm?"}
+    D -- Sí --> E["Prioridad 2: Evasión Física Proporcional (PD)"]
+    D -- No --> F["Prioridad 3: Seguir Trayectoria de la Cámara"]
+```
 
-Si no hay riesgos físicos inmediatos detectados por los sensores, el control del movimiento se delega a las decisiones lógicas procesadas por la cámara.
+Si no hay riesgos físicos inmediatos detectados por los sensores de distancia, la lógica delega el guiado del carro al procesamiento visual de la cámara:
 
+```mermaid
 flowchart TD
-    Start([Inicio]) --> LeerSensores[Leer 3 Sensores Ultrasónicos]
-    LeerSensores --> LeerCamara[Recibir Datos de la Cámara]
+    Start([Inicio]) --> LeerSensores["Leer 3 Sensores Ultrasónicos"]
+    LeerSensores --> LeerCamara["Recibir Datos de la Cámara (UART)"]
     
     %% Decisión de Seguridad Frontal
-    LeerSensores --> Det_Frente{¿Obstáculo Frontal < 15cm?}
-    Det_Frente -- Sí --> EvasionUrgente[Maniobra de Evasión / Frenado]
+    LeerSensores --> Det_Frente{"¿Obstáculo Frontal < 25cm?"}
+    Det_Frente -- Sí --> EvasionUrgente["Maniobra de Reversa / Escape Directo"]
     
     %% Navegación Normal
-    Det_Frente -- No --> AnalizarCamara{¿Cámara detecta bloque o carril?}
+    Det_Frente -- No --> AnalizarCamara{"¿Cámara detecta pilar o meta?"}
     
-    AnalizarCamara -- Sí (Rojo/Verde) --> PlanificarGiro[Calcular trayectoria de evasión]
-    AnalizarCamara -- No --> MantenerCarril[Centrado en Carril usando Paredes Izq/Der]
+    AnalizarCamara -- "Sí (Rojo/Verde)" --> PlanificarGiro["Evasión de Pilar por Cámara (Servo + Desaceleración)"]
+    AnalizarCamara -- No --> MantenerCarril["Centrado Autónomo en Carril (PD Lateral)"]
     
-    EvasionUrgente --> EnviarActuadores[Enviar señales a Servo y Motor]
+    EvasionUrgente --> EnviarActuadores["Enviar señales a Servo y Motor"]
     PlanificarGiro --> EnviarActuadores
     MantenerCarril --> EnviarActuadores
     EnviarActuadores --> LeerSensores
+```
+### 🛣️ 2. Algoritmos de Navegación y Maniobras en Pista
 
-El robot combina las lecturas visuales de la ESP32-Cam con las distancias medidas por los tres sensores ultrasónicos para navegar de forma segura.
+#### 🟢 Mantenimiento de Carril Inteligente (Lane Keeping)
+El robot navega de forma fluida utilizando un lazo de control **Proporcional-Derivativo (PD)** que calcula constantemente la desviación respecto al centro de las paredes utilizando los sensores ultrasónicos izquierdo y derecho.
 
+*   **Fórmulas aplicadas:**  
+    `Error = Distancia_Derecha - Distancia_Izquierda`  
+    `Corrección_PD = (Error * Kp) + ((Error - Último_Error) * Kd)`
+*   La variable `Kd` actúa como amortiguador de la dirección, eliminando por completo el balanceo lateral (*zig-zag*) y asegurando un avance recto y sumamente estable.
+
+#### 🎯 Evasión de Pilares por Cámara (Active Dodging)
+Cuando la ESP32-Cam detecta la presencia de un pilar de color dentro de su Región de Interés (ROI), desactiva temporalmente el centrado por ultrasonidos y asume el control del volante aplicando giros agresivos y cerrados según el color del pilar, respetando el reglamento oficial de la WRO:
+*   **Pilar Rojo:** El carro gira con fuerza hacia la **Derecha** (ángulo entre 110° y 130°).
+*   **Pilar Verde:** El carro gira con fuerza hacia la **Izquierda** (ángulo entre 50° y 70°).
+*   **Desaceleración Activa:** Para garantizar que el timón Ackermann tenga suficiente agarre en las llantas de hule del chasis y doble sin derrapar (*subviraje*), el Arduino reduce inmediatamente la velocidad del motor de tracción trasera a **`95` PWM** durante toda la evasión.
+*   **Tiempo de Retención (Evasion Hold-Time):** Una vez que el pilar sale del campo visual de la cámara, el Arduino mantiene el timón doblado a tope durante **300 milisegundos más** para asegurar que la cola del carro libre físicamente el obstáculo antes de regresar al centrado por ultrasonido.
+
+#### 🔄 Giro de Retorno Autónomo (U-Turn)
+En la tercera vuelta del circuito, si la cámara detecta la señal roja de intersección, envía la señal de activación `comandoEspecial = 3`. El Arduino interrumpe inmediatamente el centrado de carril, dobla la dirección al máximo hacia la izquierda (`50°`) y avanza a velocidad regulada de `80` PWM durante exactamente **1.3 segundos** para completar un giro perfecto de 180° dentro del carril ancho de la pista, reanudando la marcha normal tras finalizar el temporizador.
+
+#### 🚗 Maniobra de Estacionamiento en Reversa (Diagonal Parallel Parking)
+Al finalizar la tercera vuelta de competencia (`contadorVueltas >= 3`), el robot reduce su velocidad de avance a `55` PWM e inicia la secuencia autónoma de parqueo de 4 fases utilizando los sensores ultrasónicos laterales para detectar la apertura del cajón:
+*   **Fase 0 (Búsqueda):** Avanza despacio pegado a la derecha. Si el sensor derecho detecta un hueco en la pared (`distDer > 35 cm`) **Y** la cámara confirma el color de la zona de parqueo (`comandoEspecial == 4`), inicia la maniobra física.
+*   **Fase 1 (Alineación):** Avanza recto de frente durante **800 milisegundos** para que el eje trasero del carro libre físicamente la esquina del cajón de estacionamiento.
+*   **Fase 2 (Entrada en Reversa):** Gira el volante a tope derecho (`130°`) y retrocede de forma dócil y controlada por PWM a **`-120` PWM** durante **1.2 segundos** para meter la parte trasera en el cajón.
+*   **Fase 3 (Alineación Paralela):** Gira el volante a tope izquierdo (`50°`) y continúa retrocediendo en reversa para meter la trompa del coche y alinearlo en paralelo a las paredes. La reversa se apaga inmediatamente si el sensor frontal detecta que el carro ya se alineó de frente o por un temporizador de seguridad de **1.0 segundo**.
+*   **Fase 4 (Detenido):** Transiciona al estado `DETENIDO`, centrando el servo a `90°` y apagando por completo el motor de tracción.
+
+---
+
+### 📷 3. Estrategia de Visión: Densidad y Saturación de Color vs. Punto Único
+
+Las variaciones de iluminación en la pista de competencia suelen descalibrar los sensores de color tradicionales o los algoritmos de detección basados en un solo píxel (punto único).
+
+Para resolver este desafío, el pipeline de la ESP32-Cam de **TROYA** analiza la **densidad y opacidad de los colores en el espacio HSV**:
+
+*   **Filtro por Umbral de Saturación (S) y Valor (V):** Al convertir la imagen de RGB a HSV, aislamos los cambios de brillo de la pista. El canal de saturación nos permite identificar la pureza y densidad del color (naranja, azul, rojo o verde) sin importar si la zona está iluminada directamente o bajo sombra.
+*   **Densidad de Región (Blobs):** Se define una Región de Interés (ROI). El algoritmo calcula el área del contorno binarizado (cantidad de píxeles activos dentro de una máscara). Si la densidad de píxeles supera un umbral mínimo configurado, el objeto se clasifica como obstáculo válido.
+*   **Centro de Masa (Centroide):** En lugar de seguir el borde del objeto, calculamos el centroide matemático de la masa de color detectada. Esto reduce el "ruido visual" de la imagen y proporciona una coordenada estable para el cálculo del error de dirección del chasis.
