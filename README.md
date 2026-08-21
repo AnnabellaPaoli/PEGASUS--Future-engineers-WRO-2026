@@ -2,6 +2,23 @@
 
 Este repositorio contiene el desarrollo del robot autónomo **TROYA** de nuestro equipo **PEGASUS**, diseñado para competir en la categoría de Futuros Ingenieros en la subcategoría **SENIOR** de la WRO 2026.
 
+## 👥 Nuestro Equipo: PEGASUS
+
+Aquí presentamos a los integrantes del equipo **PEGASUS**, responsables del diseño, construcción y programación del robot autónomo **TROYA** para la subcategoría **SENIOR** de la WRO 2026:
+
+![Foto de Equipo](t-photos/foto_equipo.jpg)
+
+### Integrantes y Roles:
+
+*   **[Annabella Paoli]**  
+    *   **Rol:** Líder de Desarrollo de Software y Visión Artificial| Líder de Diseño Mecánico, Chasis
+    *   **Contribución:** Responsable del pipeline de visión computacional HSV en la ESP32-Cam, calibración de color de los pilares, programación del control PD en el Arduino Uno y sincronización del puerto serie asíncrono.Responsable del diseño estructural en 3D del chasis Ackermann de TROYA y reparación de la mangueta de PVC de alta flexibilidad.
+    
+
+*   **[Bruno Paoli]**  
+    *   **Rol:** Líder de Integración Eléctrica, Potencia y Seguridad.  
+    *   **Contribución:** Responsable del esquema eléctrico de conexiones, calibración y testeo del regulador de voltaje LM2596, distribución de masa común (GND) y análisis de seguridad del sistema de alimentación de las celdas 18650.
+
 ---
 
 ## 📁 Estructura del Proyecto
