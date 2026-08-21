@@ -51,7 +51,7 @@ El diseño de **TROYA** ha sido un proceso iterativo de resolución de problemas
 ### 📖 Reporte de Ingeniería y Bitácora Completa
 Para conocer los detalles matemáticos de la calibración, el análisis de causas raíz de los fallos, los esquemas de descarte y el diario completo de desarrollo de nuestro equipo:
 
-👉 **[Haz clic aquí para leer nuestra Bitácora de Ingeniería y Reporte de Desarrollo Completo](documentation/bitacora_creacion_prototipo.md)**
+👉 **[Haz clic aquí para leer nuestra Bitácora de Ingeniería y Reporte de Desarrollo Completo](documation/bitacora_creacion_prototipo.md)**
 ---
 
 ## 🔌 Arquitectura del Sistema (Hardware)
