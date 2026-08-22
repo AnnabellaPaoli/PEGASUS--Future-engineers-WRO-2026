@@ -134,9 +134,10 @@ graph TD
     B -- No --> D{Side Wall Very Close < 10cm?}
     D -- Yes --> E[Priority 2: Ultrasonic Physical Correction]
     D -- No --> F[Priority 3: Follow Camera Trajectory]
-    ```
+```
 
 If no immediate physical risks are detected by the distance sensors, movement control is delegated to the logical decisions processed by the camera.
+
 ```mermaid
 flowchart TD
     Start([Start]) --> LeerSensores[Read 3 Ultrasonic Sensors]
