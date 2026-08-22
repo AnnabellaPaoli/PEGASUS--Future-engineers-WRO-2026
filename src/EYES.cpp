@@ -20,27 +20,44 @@
 
 const int ROI_Y_START = 65; 
 const int ROI_Y_END = 115;
-const int MIN_DENSIDAD_PIXELES = 40; 
+
+// AJUSTE: Subido de 40 a 120 pixeles para evitar que sombras pequeñas activen falsos giros
+const int MIN_DENSIDAD_PIXELES = 120; 
 
 struct ColorBlob {
   long sumX = 0;
   int count = 0;
 };
 
+// CONVERSIÓN CON ARITMÉTICA FIRMADA (Soluciona el bug del bucle infinito de la serpiente)
 void rgb565_to_hsv(uint16_t rgb, uint8_t &h, uint8_t &s, uint8_t &v) {
-  uint8_t r = ((rgb >> 11) & 0x1F) << 3;
-  uint8_t g = ((rgb >> 5) & 0x3F) << 2;
-  uint8_t b = (rgb & 0x1F) << 3;
-  uint8_t minVal = min(r, min(g, b));
-  uint8_t maxVal = max(r, max(g, b));
+  // Convertimos a enteros de 16 bits con signo para evitar desbordamientos y subflujos en restas
+  int16_t r = ((rgb >> 11) & 0x1F) << 3;
+  int16_t g = ((rgb >> 5) & 0x3F) << 2;
+  int16_t b = (rgb & 0x1F) << 3;
+
+  int16_t minVal = min(r, min(g, b));
+  int16_t maxVal = max(r, max(g, b));
   v = maxVal;
-  uint8_t delta = maxVal - minVal;
+  
+  int16_t delta = maxVal - minVal;
   s = (maxVal == 0) ? 0 : (255 * delta / maxVal);
-  if (s == 0) h = 0;
-  else {
-    if (r == maxVal) h = 0 + 43 * (g - b) / delta;
-    else if (g == maxVal) h = 85 + 43 * (b - r) / delta;
-    else h = 171 + 43 * (r - g) / delta;
+  
+  if (s == 0) {
+    h = 0;
+  } else {
+    // Operaciones matemáticas con signo para evitar que el compilador interprete valores negativos como enormes positivos
+    if (r == maxVal) {
+      int16_t h_calc = 43 * (g - b) / delta;
+      if (h_calc < 0) h_calc += 256; // Evitar valores de Hue negativos por subflujo
+      h = h_calc;
+    }
+    else if (g == maxVal) {
+      h = 85 + 43 * (b - r) / delta;
+    }
+    else {
+      h = 171 + 43 * (r - g) / delta;
+    }
   }
 }
 
@@ -81,7 +98,8 @@ void setup() {
     s->set_gain_ctrl(s, 0);      
     s->set_exposure_ctrl(s, 0);  
     s->set_aec_value(s, 250);    
-    s->set_agc_value(s, 15);     
+    
+    // s->set_agc_value(s, 15);  <-- LÍNEA DE ERROR DE COMPILACIÓN COMENTADA DE FORMA SEGURA
   }
 }
 
@@ -126,6 +144,7 @@ void loop() {
     detectaMeta = 1;
   }
 
+  // Lógica de decisiones libre de "fantasmas" de color
   if (rojo.count > MIN_DENSIDAD_PIXELES && rojo.count > verde.count) {
     int centroideRojo = rojo.sumX / rojo.count;
     anguloCalculado = map(centroideRojo, 0, fb->width, 100, 115);
@@ -151,3 +170,5 @@ void loop() {
   esp_camera_fb_return(fb);
   delay(25); 
 }
+
+

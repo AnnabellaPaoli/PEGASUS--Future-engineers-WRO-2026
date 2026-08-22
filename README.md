@@ -1,162 +1,160 @@
 # PEGASUS - WRO Future Engineers 2026
 
-Este repositorio contiene el desarrollo del robot autónomo **TROYA** de nuestro equipo **PEGASUS**, diseñado para competir en la categoría de Futuros Ingenieros en la subcategoría **SENIOR** de la WRO 2026.
+This repository contains the development of the autonomous robot **TROYA** by team **PEGASUS**, designed to compete in the Future Engineers category in the **SENIOR** subcategory of WRO 2026.
 
-## 👥 Nuestro Equipo: PEGASUS
+## 👥 Our Team: PEGASUS
 
-Aquí presentamos a los integrantes del equipo **PEGASUS**, responsables del diseño, construcción y programación del robot autónomo **TROYA** para la subcategoría **SENIOR** de la WRO 2026:
+Here we present the members of team **PEGASUS**, responsible for the design, construction, and programming of the autonomous robot **TROYA** for the WRO 2026 **SENIOR** subcategory:
 
-![Foto de Equipo](t-photos/foto_equipo.jpg)
+![Team Photo](t-photos/team.jpeg)
 
-### Integrantes y Roles:
+### Members and Roles:
 
-*   **[Annabella Paoli]**  
-    *   **Rol:** Líder de Desarrollo de Software y Visión Artificial| Líder de Diseño Mecánico, Chasis
-    *   **Contribución:** Responsable del pipeline de visión computacional HSV en la ESP32-Cam, calibración de color de los pilares, programación del control PD en el Arduino Uno y sincronización del puerto serie asíncrono.Responsable del diseño estructural en 3D del chasis Ackermann de TROYA y reparación de la mangueta de PVC de alta flexibilidad.
+*   **Annabella Paoli**   
+    *   **Role:** Software & Computer Vision Lead | Mechanical & Chassis Design Lead
+    *   **Contribution:** Responsible for the HSV computer vision pipeline on the ESP32-Cam, pillar color calibration, PD control programming on the Arduino Uno, and asynchronous serial communication synchronization. Responsible for the 3D structural design of TROYA's Ackermann chassis and the repair of the high-flexibility PVC steering knuckle.
     
 
-*   **[Bruno Paoli]**  
-    *   **Rol:** Líder de Integración Eléctrica, Potencia y Seguridad.  
-    *   **Contribución:** Responsable del esquema eléctrico de conexiones, calibración y testeo del regulador de voltaje LM2596, distribución de masa común (GND) y análisis de seguridad del sistema de alimentación de las celdas 18650.
+*   **Bruno Paoli**   
+    *   **Role:** Electrical Integration, Power & Safety Lead  
+    *   **Contribution:** Responsible for the electrical connection schematics, calibration and testing of the LM2596 voltage regulator, common ground (GND) distribution, and safety analysis of the 18650 battery cell power supply system.
 
 ---
 
-## 📁 Estructura del Proyecto
+## 📁 Project Structure
 
-El repositorio está organizado bajo la siguiente estructura limpia para facilitar la navegación de los jueces y el equipo:
+The repository is organized under the following clean structure to facilitate navigation for the judges and the team:
 
-*   `/src`: Códigos fuente para la ESP32-Cam (visión artificial) y Arduino Uno (control y actuadores).
-*   `/schemes`: Diagramas de conexión y diseño de la distribución eléctrica.
-*   `/models`: Archivos de diseño en 3D del chasis y piezas personalizadas.
-*   `/t-photos`: Registro fotográfico del equipo PEGASUS.
-*   `/v-photos`: Registro fotográfico del robot TROYA.
-*   `/video`: Archivos y enlaces del video demostrativo de funcionamiento autónomo.
-*   `/documentation`: Reportes de ingeniería detallados, bitácora de pruebas y calibración.
-
----
-
-## 📓 Bitácora de Ingeniería y Resolución de Problemas (Engineering Log)
-
-El desarrollo de **TROYA** ha sido un camino de aprendizaje constante, donde cada fallo mecánico, eléctrico y de software fue tratado como una oportunidad para aplicar el método de diseño en ingeniería. A continuación, documentamos los desafíos más críticos que enfrentamos y cómo los resolvimos.
-
-### ⚙️ 1. Desafíos Mecánicos y Estructurales
-#### ❌ La Rotura de la Mangueta Izquierda (Dirección Ackermann)
-Durante las pruebas de giro dinámico en el suelo, la fuerza y la presión abrupta ejercidas por el servo motor de dirección quebraron físicamente la mangueta izquierda del chasis. 
-*   **Iteración 1 (Fallo):** Intentamos reparar la mangueta utilizando pegamento instantáneo de cianoacrilato, pero la junta se despegó de inmediato ante la primera vibración en el suelo.
-*   **Iteración 2 (Fallo):** Aplicamos un adhesivo epóxico de acero (*Pegatanque*). Esto aseguró el cuerpo de la mangueta, pero debido a la extrema rigidez del material, la tensión mecánica se trasladó al punto de unión entre la mangueta y el servo motor, rompiéndose nuevamente en esa zona.
-*   **La Solución de Ingeniería:** Evaluamos fabricar la pieza de repuesto en madera o metal, pero presentaban problemas de peso o dificultad de mecanizado. Finalmente, decidimos reciclar **tarjetas de crédito de PVC vencidas**. El PVC resultó ser el material idóneo: es lo suficientemente rígido para mantener la dirección alineada, pero posee la flexibilidad elástica justa para absorber los impactos y la fuerza del servo sin quebrarse.
-*   **El Proceso:** Cortamos la mangueta rota sobrante, lijamos la superficie de unión, recortamos la tarjeta de crédito a la medida de la pieza, la adaptamos y la fijamos sólidamente utilizando tornillos autorroscantes. La dirección ahora es sumamente resistente y flexible.
-
-### 🔋 2. Decisiones de Hardware y Energía
-#### ⚖️ Selección de Microcontroladores: Arduino Uno + ESP32-Cam vs. Monoplaca
-*   **La Decisión:** En lugar de utilizar una computadora de placa única costosa (como Raspberry Pi o OpenMV), decidimos implementar un sistema distribuido de bajo costo con un **Arduino Uno** para el control físico y una **ESP32-Cam** para la visión computacional.
-*   **La Razón:** Esta arquitectura cumple al 100% el objetivo de competencia (detectar pilares rojos/verdes y la línea de meta por color) con una fracción del costo y consumo de energía de las alternativas comerciales. Es un prototipo altamente viable, económico y fácil de reparar en pits en caso de fallo.
-
-#### ⚖️ Selección de Energía: 3 celdas Li-ion 18650 (~11.1V) vs. Baterías LiPo
-*   **La Decisión:** Optamos por un arreglo de 3 celdas de Litio-Ion 18650 en serie en lugar de una batería de Polímero de Litio (LiPo) estándar de aeromodelismo.
-*   **La Razón:** Las celdas 18650 son significativamente más económicas, estables y seguras de manipular en un entorno de taller escolar. Las baterías LiPo requieren cargadores balanceadores costosos y son propensas a hincharse o incendiarse ante cortocircuitos accidentales o sobredescargas, un riesgo físico que preferimos mitigar por seguridad del equipo.
-
-### ⚡ 3. El Incidente Eléctrico: Lecciones de Seguridad
-#### ❌ Cortocircuito en el Puerto de Carga Integrado
-Originalmente, diseñamos un puerto de carga integrado en el chasis para cargar las baterías directamente sin tener que desmontarlas del robot. Sin embargo, un defecto de aislamiento en las conexiones del puerto provocó un **cortocircuito masivo**. El microcontrolador hizo corto, la placa sufrió daños severos por temperatura y casi experimentamos una explosión de las celdas de litio.
-*   **La Decisión de Seguridad:** Este incidente nos hizo profundamente conscientes de los riesgos de la electrónica de potencia sin protecciones. Decidimos **eliminar por completo el puerto de carga integrado** en esta versión física del robot. 
-*   **El Protocolo Actual:** Para cargar las celdas 18650 de forma segura, las retiramos físicamente del coche utilizando portabaterías con resortes y las cargamos de manera externa en un cargador inteligente auxiliar con corte automático de energía.
-
-### 💻 4. Desafíos de Software y Arquitectura
-#### ❌ Conflicto de Timers entre el Servo y el Pin 10 (`ENA`)
-Al conectar el pin de habilitación del Puente H (`ENA`) al pin 10 del Arduino para controlar la velocidad del carro, descubrimos que el motor trasero no giraba en absoluto cuando el servo del timón (Pin 9) estaba activo.
-*   **La Causa Técnica:** La librería estándar `Servo.h` de Arduino toma el control absoluto del **Timer 1** del microcontrolador ATmega328P para generar los pulsos del servo. Al hacer esto, **deshabilita por completo la función `analogWrite()` (PWM) en los pines 9 y 10**. El Arduino simplemente ignoraba las órdenes de velocidad del motor.
-*   **La Solución:** Colocamos físicamente el jumper de plástico negro en el Puente H para dejar el pin `ENA` conectado permanentemente a 5V (HIGH físico). De esta forma, liberamos el pin 10 y reescribimos el software para controlar la velocidad mediante PWM en el **Pin 11 (`IN2`)**, el cual utiliza el **Timer 2** y no tiene ningún conflicto con el servo.
-
-#### ❌ El Bug del "Coche Zombie" (Desbordamiento de SoftwareSerial)
-Durante las pruebas de ultrasonido, añadimos retrasos de `delay(15)` entre la lectura de cada sensor para evitar interferencia de ondas. Sin embargo, al hacer esto, el carro comenzó a avanzar recto de largo, ignorando por completo las paredes y chocando sin detenerse de forma aleatoria.
-*   **La Causa Técnica:** Al sumar los delays de los sensores, el ciclo principal (`loop`) tardaba más de 55 ms en ejecutarse. A una velocidad de 38400 baudios, la ESP32-Cam envía datos tan rápido que el búfer de recepción de `SoftwareSerial` del Arduino (que solo tiene 64 bytes de capacidad) **se desbordaba constantemente**. Esto corrompía los paquetes de datos serie, haciendo que la función `sscanf` interpretara valores basura y corrompiera la memoria RAM (Stack Corruption) del Arduino Uno. El coche entraba en un estado "zombie" ignorando las condicionales lógicas de los sensores.
-*   **La Solución:** Eliminamos todos los delays intermedios de los ultrasonidos y agregamos un filtro estricto de seguridad `sscanf == 4`. El Arduino ahora solo procesa los datos de la cámara si la trama de datos serie recibida contiene exactamente los 4 enteros del protocolo, de lo contrario la descarta, garantizando que el búfer nunca se sature y que el procesador ejecute el lazo de control con total fluidez.
-
-### 🔊 5. Desafíos de Física de Sensores
-#### ❌ Absorción Acústica de la Tela (El Misterio del Cobertor)
-Durante las pruebas de frenado frontal en casa, descubrimos que el robot esquivaba perfectamente cajas de cartón o carpetas duras, pero **se estrellaba y se quedaba pegado empujando el cobertor de tela de los muebles**.
-*   **La Causa Física:** Los sensores ultrasónicos (HC-SR04) miden distancia enviando ondas de sonido que deben rebotar en una superficie dura. Las superficies textiles y blandas (como los cobertores de tela, cortinas o colchas) actúan como **aislantes acústicos**, absorbiendo la onda de sonido en lugar de reflejarla. Al no recibir el eco de rebote, el sensor retornaba una lectura máxima de `300 cm` (camino libre), haciendo que el carro avanzara ciego contra el obstáculo de tela.
-*   **La Solución:** Establecimos la regla de calibración de probar el robot **únicamente contra superficies duras** (madera, cartón, plástico), que son los materiales reales de los muros y obstáculos de la pista oficial de la WRO.
-
-#### ❌ Atasque por Fricción en Zonas Estrechas (Stall a 85 PWM)
-Al entrar en pasillos angostos, el robot comenzaba a corregir su dirección constantemente y, de pronto, se quedaba completamente quieto y en silencio a mitad de carril, a pesar de tener espacio libre al frente.
-*   **La Causa Física:** En las zonas estrechas, el lazo PD genera giros de dirección muy pronunciados. En un chasis con dirección Ackermann, doblar las ruedas delanteras con fuerza incrementa dramáticamente la **resistencia a la rodadura (fricción)** del carro. En nuestro algoritmo de curvas, permitíamos que la velocidad mínima bajara hasta `85` PWM. Esa potencia era demasiado baja para vencer el peso del chasis y la resistencia mecánica de las ruedas dobladas al mismo tiempo, provocando que el motor de tracción trasera sufriera un bloqueo por torque (*stall*).
-*   **La Solución:** Ajustamos el software para establecer un límite de velocidad mínima en curvas de **`105` PWM**. Este voltaje extra le proporciona al motor el torque necesario para empujar el chasis con las ruedas delantera dobladas al extremo sin atascarse.
+*   `/src`: Source code for the ESP32-Cam (computer vision) and Arduino Uno (control and actuators).
+*   `/schemes`: Connection diagrams and electrical distribution layout.
+*   `/models`: 3D design files for the chassis and custom parts.
+*   `/t-photos`: Photo log of team PEGASUS.
+*   `/v-photos`: Photo log of the robot TROYA.
+*   `/video`: Files and links to the demonstration video of autonomous operation.
+*   `/documentation`: Detailed engineering reports, test log, and calibration records.
 
 ---
 
-## 🔌 Arquitectura del Sistema (Hardware)
+## 📓 Engineering Log & Troubleshooting
 
-**TROYA** utiliza una arquitectura de procesamiento distribuido para maximizar la eficiencia de los recursos de bajo costo:
+The development of **TROYA** has been a journey of continuous learning, where every mechanical, electrical, and software failure was treated as an opportunity to apply the engineering design process. Below, we document the most critical challenges we faced and how we solved them.
 
-*   **ESP32-Cam:** Dedicada exclusivamente al procesamiento de visión computacional y toma de decisiones lógicas de alto nivel.
-*   **Arduino Uno:** Dedicado al control en tiempo real de los actuadores (motor DC y servo dirección) y a la lectura síncrona de los sensores de distancia ultrasónicos.
+### ⚙️ 1. Mechanical and Structural Challenges
+#### ❌ Left Steering Knuckle Breakage (Ackermann Steering)
+During dynamic floor turn testing, the abrupt force and pressure exerted by the steering servo motor physically broke the left steering knuckle of the chassis. 
+*   **Iteration 1 (Failure):** We attempted to repair the steering knuckle using cyanoacrylate instant glue, but the joint detached immediately upon the first vibration on the floor.
+*   **Iteration 2 (Failure):** We applied a steel epoxy adhesive (*Pegatanque*). This secured the body of the steering knuckle, but due to the extreme rigidity of the material, mechanical stress shifted to the joint between the knuckle and the servo motor, breaking again in that area.
+*   **The Engineering Solution:** We evaluated manufacturing a replacement part out of wood or metal, but they presented issues with weight or machining difficulty. Finally, we decided to recycle **expired PVC credit cards**. PVC proved to be the ideal material: it is rigid enough to keep the steering aligned, yet possesses just the right amount of elastic flexibility to absorb impacts and servo forces without snapping.
+*   **The Process:** We trimmed the remaining broken knuckle, sanded the joining surface, cut the credit card to the size of the part, adapted it, and firmly secured it using self-tapping screws. The steering mechanism is now extremely durable and flexible.
 
-### Diagrama de Bloques del Hardware
+### 🔋 2. Hardware and Power Decisions
+#### ⚖️ Microcontroller Selection: Arduino Uno + ESP32-Cam vs. Single Board Computer
+*   **The Decision:** Instead of using an expensive single-board computer (such as a Raspberry Pi or OpenMV), we decided to implement a low-cost distributed system using an **Arduino Uno** for low-level control and an **ESP32-Cam** for computer vision.
+*   **The Reason:** This architecture fulfills 100% of the competition goals (detecting red/green pillars and the finish line by color) at a fraction of the cost and power consumption of commercial alternatives. It is a highly viable, economical prototype that is easy to repair in the pits in case of failure.
 
-El siguiente diagrama detalla la distribución de energía (partiendo de una configuración de 3 baterías 18650 que entregan un voltaje nominal de ~11.1V) y el flujo de señales de control:
+#### ⚖️ Power Selection: 3 Li-ion 18650 Cells (~11.1V) vs. LiPo Batteries
+*   **The Decision:** We opted for an array of 3 Lithium-Ion 18650 cells in series rather than a standard model aviation Lithium Polymer (LiPo) battery.
+*   **The Reason:** 18650 cells are significantly cheaper, more stable, and safer to handle in a school workshop environment. LiPo batteries require expensive balance chargers and are prone to swelling or catching fire in the event of accidental short circuits or over-discharges—a physical risk we preferred to mitigate for team safety.
+
+### ⚡ 3. The Electrical Incident: Safety Lessons
+#### ❌ Short Circuit in the Integrated Charging Port
+Originally, we designed an integrated charging port on the chassis to charge the batteries directly without having to remove them from the robot. However, an insulation defect in the port's connections caused a **massive short circuit**. The microcontroller shorted out, the board suffered severe thermal damage, and we nearly experienced a lithium cell thermal runaway.
+*   **The Safety Decision:** This incident made us acutely aware of the risks involved in un-protected power electronics. We decided to **completely eliminate the integrated charging port** in this physical version of the robot. 
+*   **Current Protocol:** To safely charge the 18650 cells, we physically remove them from the car using spring-loaded battery holders and charge them externally using an auxiliary smart charger with automatic power cut-off.
+
+### 💻 4. Software and Architecture Challenges
+#### ❌ Timer Conflict Between Servo and Pin 10 (`ENA`)
+When connecting the H-Bridge enable pin (`ENA`) to Arduino Pin 10 to control the car's speed, we discovered that the rear motor did not spin at all when the steering servo (Pin 9) was active.
+*   **The Technical Cause:** Arduino's standard `Servo.h` library takes exclusive control of **Timer 1** on the ATmega328P microcontroller to generate servo pulses. In doing so, it **completely disables the `analogWrite()` (PWM) functionality on Pins 9 and 10**. The Arduino simply ignored motor speed commands.
+*   **The Solution:** We physically placed the black plastic jumper on the H-Bridge to keep the `ENA` pin permanently connected to 5V (physical HIGH). This freed up Pin 10, and we rewrote the software to control speed via PWM on **Pin 11 (`IN2`)**, which utilizes **Timer 2** and has no conflict with the servo.
+
+#### ❌ The "Zombie Car" Bug (SoftwareSerial Overflow)
+During ultrasonic testing, we added `delay(15)` pauses between reading each sensor to avoid wave interference. However, upon doing this, the car began driving straight endlessly, completely ignoring walls and crashing randomly without stopping.
+*   **The Technical Cause:** Adding up sensor delays caused the main loop (`loop`) to take over 55 ms to execute. At a baud rate of 38400, the ESP32-Cam sends data so quickly that Arduino's `SoftwareSerial` receive buffer (which only has a 64-byte capacity) **overflowed continuously**. This corrupted the serial data packets, causing the `sscanf` function to interpret garbage values and corrupt the Arduino Uno's RAM memory (Stack Corruption). The car entered a "zombie" state, ignoring sensor logic conditions.
+*   **The Solution:** We removed all intermediate ultrasonic delays and added a strict safety filter `sscanf == 4`. The Arduino now only processes camera data if the received serial packet contains exactly the 4 protocol integers; otherwise, it discards it, guaranteeing the buffer never saturates and the processor executes the control loop smoothly.
+
+### 🔊 5. Sensor Physics Challenges
+#### ❌ Acoustic Absorption of Fabric (The Furniture Cover Mystery)
+During frontal braking tests at home, we discovered that the robot perfectly dodged cardboard boxes and hard folders, but **crashed and got stuck pushing against fabric furniture covers**.
+*   **The Physical Cause:** Ultrasonic sensors (HC-SR04) measure distance by sending sound waves that must bounce off a hard surface. Textile and soft surfaces (such as fabric covers, curtains, or blankets) act as **acoustic insulators**, absorbing the sound wave instead of reflecting it. Receiving no echo return, the sensor returned a maximum reading of `300 cm` (clear path), causing the car to drive blind into the fabric obstacle.
+*   **The Solution:** We established the calibration rule of testing the robot **exclusively against hard surfaces** (wood, cardboard, plastic), which are the actual materials used for walls and obstacles in the official WRO track.
+
+#### ❌ Friction Stall in Narrow Zones (Stall at 85 PWM)
+Upon entering narrow passages, the robot began constantly correcting its steering and suddenly came to a complete, silent stop mid-lane, despite having open space ahead.
+*   **The Physical Cause:** In narrow zones, the PD loop generates very sharp steering corrections. On an Ackermann steering chassis, turning the front wheels sharply increases **rolling resistance (friction)** dramatically. In our cornering algorithm, we allowed the minimum speed to drop as low as `85` PWM. This power was too low to overcome both the chassis weight and the mechanical resistance of fully turned wheels at the same time, causing the rear drive motor to suffer a torque stall.
+*   **The Solution:** We adjusted the software to set a minimum speed limit in curves of **`105` PWM**. This extra voltage provides the motor with the necessary torque to push the chassis with fully turned front wheels without stalling.
+
+---
+
+## 🔌 System Architecture (Hardware)
+
+**TROYA** uses a distributed processing architecture to maximize the efficiency of low-cost hardware resources:
+
+*   **ESP32-Cam:** Exclusively dedicated to computer vision processing and high-level logical decision-making.
+*   **Arduino Uno:** Dedicated to real-time actuator control (DC motor and steering servo) and synchronous distance reading from ultrasonic sensors.
+
+### Hardware Block Diagram
+
+The following diagram details the power distribution (starting from a 3-cell 18650 battery setup delivering a nominal voltage of ~11.1V) and control signal flow:
 ```mermaid
 graph TD
-    Bateria["Bateria 18650 x 3 (11.1V)"] --> |Alimentacion directa| PuenteH["Puente H L298N / TB6612FNG"]
-    Bateria --> |Carga| PuertoCarga["Puerto de Carga"]
-    Bateria --> |Linea de Potencia| Regulador["Regulador de Voltaje LM2596"]
-    Regulador --> |5V Regulados| Arduino["Arduino Uno"]
-    Regulador --> |5V Regulados| ESP32["ESP32-Cam"]
+    Bateria["3x 18650 Battery Array (11.1V)"] --> |Direct Power| PuenteH["L298N / TB6612FNG H-Bridge"]
+    Bateria --> |Charging| PuertoCarga["Charging Port"]
+    Bateria --> |Power Line| Regulador["LM2596 Voltage Regulator"]
+    Regulador --> |5V Regulated| Arduino["Arduino Uno"]
+    Regulador --> |5V Regulated| ESP32["ESP32-Cam"]
     
     ESP32 --> |"UART Serial (TX/RX)"| Arduino
     
-    %% Sensores Ultrasónicos conectados al Arduino
-    US_Izq["Ultrasonico Izquierdo"] --> |"Trigger / Echo"| Arduino
-    US_Cent["Ultrasonico Frontal"] --> |"Trigger / Echo"| Arduino
-    US_Der["Ultrasonico Derecho"] --> |"Trigger / Echo"| Arduino
+    %% Ultrasonic Sensors connected to Arduino
+    US_Izq["Left Ultrasonic"] --> |"Trigger / Echo"| Arduino
+    US_Cent["Front Ultrasonic"] --> |"Trigger / Echo"| Arduino
+    US_Der["Right Ultrasonic"] --> |"Trigger / Echo"| Arduino
     
-    Arduino --> |Senal PWM| Servo["Servo Motor Direccion"]
-    Arduino --> |"Senal PWM y Direccion"| PuenteH
-    PuenteH --> |Energia| MotorDC["Motor DC Traccion"]
+    Arduino --> |PWM Signal| Servo["Steering Servo Motor"]
+    Arduino --> |"PWM & Direction Signal"| PuenteH
+    PuenteH --> |Power| MotorDC["DC Drive Motor"]
+```
+### Control Logic and Autonomous Navigation
 
-### Lógica de Control y Navegación Autónomo
+TROYA's control system employs a sensor fusion and proportional (P) control approach to reliably handle navigation, obstacle avoidance, and parking challenges on an Ackermann-steering chassis.
 
-El sistema de control de **TROYA** utiliza un enfoque de **fusión de sensores** y **control proporcional (P)** para resolver de forma estable los desafíos de navegación, evasión de obstáculos y estacionamiento en un chasis con dirección tipo Ackermann.
+1. Sensor Fusion and Control Priorities
+To optimize the use of limited hardware resources (Arduino Uno and ESP32-Cam), a distributed control architecture with assigned priorities was implemented:
 
----
+* **Vision Processing (ESP32-Cam)**: Responsible for color classification of obstacles (red/green) and proposing turn trajectories based on detected colors.
 
-### 1. Fusión de Sensores y Prioridades de Control
+* **Safety & Distance Control (Arduino Uno)**: Reads the 3 ultrasonic sensors in real time for millimeter-accurate centering relative to side walls and acts as an autonomous emergency braking system if camera lag occurs.
 
-Para optimizar el uso de los recursos de hardware limitados (Arduino Uno y ESP32-Cam), se implementó una arquitectura de control distribuida con asignación de prioridades:
-
-*   **Procesamiento de Visión (ESP32-Cam):** Se encarga de la clasificación de color de obstáculos (rojo/verde) y de proponer trayectorias de giro basadas en el color detectado
-*   **Control de Seguridad y Distancia (Arduino Uno):** Lee en tiempo real los 3 sensores ultrasónicos para el centrado milimétrico respecto a las paredes laterales y actúa como un sistema de freno autónomo de emergencia si la cámara experimenta retraso (lag).
-
-El flujo de prioridades se ejecuta bajo el siguiente criterio:
-
+The priority flow executes under the following criteria:
+```mermaid
 graph TD
-    A[Lectura de Sensores Ultrasónicos] --> B{¿Obstáculo frontal < 20cm?}
-    B -- Sí --> C[Prioridad 1: Detener Motor / Seguridad]
-    B -- No --> D{¿Pared lateral muy cercana < 10cm?}
-    D -- Sí --> E[Prioridad 2: Corrección Física por Ultrasónicos]
-    D -- No --> F[Prioridad 3: Seguir Trayectoria propuesta por Cámara]
+    A[Read Ultrasonic Sensors] --> B{Front Obstacle < 20cm?}
+    B -- Yes --> C[Priority 1: Stop Motor / Emergency Safety]
+    B -- No --> D{Side Wall Very Close < 10cm?}
+    D -- Yes --> E[Priority 2: Ultrasonic Physical Correction]
+    D -- No --> F[Priority 3: Follow Camera Trajectory]
+    ```
 
-Si no hay riesgos físicos inmediatos detectados por los sensores, el control del movimiento se delega a las decisiones lógicas procesadas por la cámara.
-
+If no immediate physical risks are detected by the distance sensors, movement control is delegated to the logical decisions processed by the camera.
+```mermaid
 flowchart TD
-    Start([Inicio]) --> LeerSensores[Leer 3 Sensores Ultrasónicos]
-    LeerSensores --> LeerCamara[Recibir Datos de la Cámara]
+    Start([Start]) --> LeerSensores[Read 3 Ultrasonic Sensors]
+    LeerSensores --> LeerCamara[Receive Camera Data]
     
-    %% Decisión de Seguridad Frontal
-    LeerSensores --> Det_Frente{¿Obstáculo Frontal < 15cm?}
-    Det_Frente -- Sí --> EvasionUrgente[Maniobra de Evasión / Frenado]
+    %% Front Safety Decision
+    LeerSensores --> Det_Frente{Front Obstacle < 15cm?}
+    Det_Frente -- Yes --> EvasionUrgente[Emergency Braking / Evasion]
     
-    %% Navegación Normal
-    Det_Frente -- No --> AnalizarCamara{¿Cámara detecta bloque o carril?}
+    %% Normal Navigation
+    Det_Frente -- No --> AnalizarCamara{Camera detects block or lane?}
     
-    AnalizarCamara -- Sí (Rojo/Verde) --> PlanificarGiro[Calcular trayectoria de evasión]
-    AnalizarCamara -- No --> MantenerCarril[Centrado en Carril usando Paredes Izq/Der]
+    AnalizarCamara -- Yes (Red/Green) --> PlanificarGiro[Calculate Evasion Trajectory]
+    AnalizarCamara -- No --> MantenerCarril[Lane Centering using Left/Right Walls]
     
-    EvasionUrgente --> EnviarActuadores[Enviar señales a Servo y Motor]
+    EvasionUrgente --> EnviarActuadores[Send Signals to Servo & Motor]
     PlanificarGiro --> EnviarActuadores
     MantenerCarril --> EnviarActuadores
     EnviarActuadores --> LeerSensores
-
-El robot combina las lecturas visuales de la ESP32-Cam con las distancias medidas por los tres sensores ultrasónicos para navegar de forma segura.
-
+```
+The robot combines visual readings from the ESP32-Cam with distances measured by the three ultrasonic sensors to navigate safely.
