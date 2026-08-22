@@ -84,6 +84,8 @@ Upon entering narrow passages, the robot began constantly correcting its steerin
 *   **The Physical Cause:** In narrow zones, the PD loop generates very sharp steering corrections. On an Ackermann steering chassis, turning the front wheels sharply increases **rolling resistance (friction)** dramatically. In our cornering algorithm, we allowed the minimum speed to drop as low as `85` PWM. This power was too low to overcome both the chassis weight and the mechanical resistance of fully turned wheels at the same time, causing the rear drive motor to suffer a torque stall.
 *   **The Solution:** We adjusted the software to set a minimum speed limit in curves of **`105` PWM**. This extra voltage provides the motor with the necessary torque to push the chassis with fully turned front wheels without stalling.
 
+### **If you want to watch the bitacora proof** ![BITACORA](documention/bitacora_creacion_prototipo.md)
+
 ---
 
 ## 🔌 System Architecture (Hardware)
